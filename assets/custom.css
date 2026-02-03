@@ -1,4 +1,4 @@
-/* assets/css/custom.css */
+/* Capstone Portal - Modern Design System */
 * {
   margin: 0;
   padding: 0;
@@ -6,19 +6,23 @@
 }
 
 :root {
-  --primary: #3b82f6;
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
   --primary-dark: #1e40af;
-  --secondary: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --light: #f9fafb;
-  --dark: #1f2937;
-  --gray: #6b7280;
-  --border: #e5e7eb;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --success: #059669;
+  --success-light: #10b981;
+  --warning: #d97706;
+  --error: #dc2626;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --border-color: #e5e7eb;
+  --bg-light: #f9fafb;
+  --bg-white: #ffffff;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --transition: all 0.2s ease;
 }
 
 html {
@@ -26,11 +30,12 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: var(--light);
-  color: var(--dark);
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  line-height: 1.5;
   font-size: 15px;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Typography */
@@ -493,4 +498,318 @@ main {
     padding: 0.65rem 1.25rem;
     font-size: 0.9rem;
   }
+}
+
+/* Notification Bell Styles - Enhanced Design */
+/* ============================================================================
+   NOTIFICATION SYSTEM - ULTRA COMPACT REDESIGN
+   ============================================================================ */
+
+.notification-system {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 0.5rem;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-bell:hover {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.3);
+  transform: scale(1.05);
+}
+
+.notification-bell:active {
+  transform: scale(0.98);
+}
+
+.notification-bell svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke: var(--primary);
+  stroke-width: 2;
+  fill: none;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  font-size: 0.5rem;
+  font-weight: 700;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+.notification-badge.hidden {
+  display: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  z-index: 1000;
+  width: 240px;
+  max-height: 280px;
+  overflow: hidden;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.notification-panel:not(.hidden) {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-panel-header {
+  padding: 0.5rem 0.6rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.notification-panel-header h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notification-close svg {
+  width: 1rem;
+  height: 1rem;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.notification-items {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.3rem 0;
+}
+
+.notification-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.notification-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-items::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.notification-items::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.notification-item {
+  cursor: pointer;
+  padding: 0.45rem 0.55rem;
+  margin: 0;
+  border: none;
+  background: transparent;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.15s ease;
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: #fafbfc;
+}
+
+.notification-item.unread {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.03) 100%);
+  border-left-color: #667eea;
+}
+
+.notification-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  background: var(--light);
+  font-weight: 600;
+}
+
+.notification-item.review .notification-icon {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.notification-item.submission .notification-icon {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.notification-item.approval .notification-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.notification-item.rejection .notification-icon {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.notification-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  line-height: 1.2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.2rem;
+}
+
+.notification-message {
+  font-size: 0.65rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.3;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notification-time {
+  font-size: 0.6rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.notification-unread-dot {
+  width: 0.35rem;
+  height: 0.35rem;
+  background: var(--primary);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.notification-empty {
+  padding: 1rem 0.8rem;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.notification-empty svg {
+  width: 2rem;
+  height: 2rem;
+  stroke: #d1d5db;
+  margin-bottom: 0.3rem;
+}
+
+.notification-empty p {
+  margin: 0;
+}
+
+.notification-empty p:last-child {
+  font-size: 0.65rem;
+  margin-top: 0.2rem;
 }

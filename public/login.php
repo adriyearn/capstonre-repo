@@ -52,43 +52,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $csrf = csrf_token();
 ?>
-<!doctype html>
-  <html>
-  
-<head><meta charset="utf-8"><title>Login</title>
-<link href="/capstone-repo/assets/custom.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Capstone Portal</title>
+    <link rel="stylesheet" href="../assets/auth.css?v=<?php echo time(); ?>">
 </head>
 <body>
-<main class="container-small py-3">
-  <div class="card mt-6">
-    <div class="card-header">
-      <h1 class="text-center mb-0">Welcome Back</h1>
-    </div>
-    <div class="card-body">
-      <?php if ($error): ?>
-        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
-      <?php endif; ?>
-      <form method="post" action="login.php">
-        <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf); ?>">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" required>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-header-icon">📚</div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account</p>
+            </div>
+
+            <div class="auth-body">
+                <?php if ($error): ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
+
+                <form method="post" action="login.php">
+                    <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf); ?>">
+                    
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="register.php">Register here</a></p>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn-primary btn-block">Sign In</button>
-      </form>
     </div>
-    <div class="card-footer text-center">
-      <p class="mb-0">Don't have an account? <a href="register.php">Register here</a></p>
-    </div>
-  </div>
-</main>
-<footer>
-  <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
-</footer>
-<script src="/capstone-repo/assets/app.js"></script>
+
+    <footer class="page-footer">
+        <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
+    </footer>
+
+    <script src="../assets/app.js"></script>
 </body>
 </html>

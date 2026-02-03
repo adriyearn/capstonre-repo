@@ -63,65 +63,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Render minimal HTML form (or include your template)
 $csrf = csrf_token();
 ?>
-<!doctype html>
-<html>
-<head><meta charset="utf-8"><title>Register</title>
-<link href="/capstone-repo/assets/custom.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Capstone Portal</title>
+    <link rel="stylesheet" href="../assets/auth.css?v=<?php echo time(); ?>">
 </head>
 <body>
-<main class="container-small py-3">
-  <div class="card mt-6">
-    <div class="card-header">
-      <h1 class="text-center mb-0">Create Account</h1>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-header-icon">🎓</div>
+                <h1>Create Account</h1>
+                <p>Join our capstone project community</p>
+            </div>
+
+            <div class="auth-body">
+                <?php if (!empty($errors)): ?>
+                    <div class="alert alert-danger">
+                        <?php echo implode('<br>', array_map('htmlspecialchars', $errors)); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form method="post" action="register.php">
+                    <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf); ?>">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                        <div class="form-hint">Minimum 8 characters with letters, numbers, and symbols recommended</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="program">Program</label>
+                        <select id="program" name="program" required>
+                            <option value="">Select Program</option>
+                            <option value="BSIT">BSIT</option>
+                            <option value="BSCS">BSCS</option>
+                            <option value="BSIS">BSIS</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="login.php">Sign in here</a></p>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-      <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger">
-          <?php echo implode('<br>', array_map('htmlspecialchars', $errors)); ?>
-        </div>
-      <?php endif; ?>
-      <form method="post" action="register.php">
-        <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf); ?>">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required>
-          <p class="text-muted mb-0" style="font-size: 0.875rem;">Min. 8 characters</p>
-        </div>
-        <div class="form-group">
-          <label for="full_name">Full Name</label>
-          <input type="text" id="full_name" name="full_name" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-          <label for="program">Program</label>
-          <select id="program" name="program" required>
-            <option value="">Select Program</option>
-            <option value="BSIT">BSIT</option>
-            <option value="BSCS">BSCS</option>
-            <option value="BSIS">BSIS</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="year">Year</label>
-          <input type="number" id="year" name="year" min="2000" max="2100">
-        </div>
-        <button type="submit" class="btn-primary btn-block">Create Account</button>
-      </form>
-    </div>
-    <div class="card-footer text-center">
-      <p class="mb-0">Already have an account? <a href="login.php">Sign in here</a></p>
-    </div>
-  </div>
-</main>
-<footer>
-  <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
-</footer>
-<script src="/capstone-repo/assets/app.js"></script>
+
+    <footer class="page-footer">
+        <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
+    </footer>
+
+    <script src="../assets/app.js"></script>
 </body>
+</html>

@@ -7,53 +7,70 @@ $pdo = DB::getConnection();
 $counts = $pdo->query("SELECT status, COUNT(*) AS cnt FROM projects GROUP BY status")->fetchAll(PDO::FETCH_KEY_PAIR);
 $users = $pdo->query("SELECT user_id, username, role, status FROM users ORDER BY role")->fetchAll();
 ?>
-<!doctype html>
-<html>
-<head><title>Admin Dashboard</title>
-<link href="/capstone-repo/assets/custom.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Capstone Portal</title>
+    <link rel="stylesheet" href="../assets/dashboard.css">
 </head>
 <body>
 <header>
-  <div class="container">
-    <nav class="navbar">
-      <div class="navbar-brand">Capstone Portal</div>
-      <a href="/capstone-repo/public/logout.php" class="btn btn-ghost btn-sm">Logout</a>
-    </nav>
-  </div>
-</header>
-<main class="container py-3">
-  <div class="mb-6">
-    <h1>Admin Dashboard</h1>
-    <p class="text-muted">System overview and user management</p>
-  </div>
-
-  <div class="grid grid-cols-3 mb-6">
-    <?php 
-      $statuses = ['submitted', 'under_review', 'approved', 'rejected', 'revision_requested', 'archived'];
-      foreach ($statuses as $status):
-        $count = $counts[$status] ?? 0;
-        $badgeClass = match($status) {
-          'submitted' => 'badge-warning',
-          'under_review' => 'badge-primary',
-          'approved' => 'badge-success',
-          'rejected', 'archived' => 'badge-danger',
-          'revision_requested' => 'badge-warning',
-        };
-    ?>
-      <div class="card">
-        <div class="card-body">
-          <p class="text-muted mb-2" style="font-size: 0.875rem;"><?php echo ucwords(str_replace('_', ' ', $status)); ?></p>
-          <p style="font-size: 2rem; font-weight: 700; margin: 0;"><?php echo $count; ?></p>
-        </div>
-      </div>
-    <?php endforeach; ?>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <h2 class="mb-0">User Management</h2>
+    <div class="navbar">
+        <div class="navbar-brand">⚙️ Admin Dashboard</div>
+        <nav class="navbar-nav">
+            <div id="notification-system" class="notification-system">
+                <button id="notification-bell" class="notification-bell" title="Notifications">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span id="notification-badge" class="notification-badge hidden">0</span>
+                </button>
+                <div id="notification-panel" class="notification-panel hidden" role="dialog" aria-label="Notifications">
+                    <div class="notification-panel-header">
+                        <h4>Notifications</h4>
+                        <button id="notification-close" class="notification-close" aria-label="Close notifications">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="notification-items" class="notification-items"></div>
+                </div>
+            </div>
+            <a href="../public/approved_projects.php" class="btn btn-ghost">📚 Browse Projects</a>
+            <a href="../public/logout.php" class="btn btn-ghost">Logout</a>
+        </nav>
     </div>
-    <div class="card-body" style="overflow-x: auto;">
+</header>
+
+<main>
+    <div class="dashboard-header">
+        <h1>System Overview</h1>
+        <p>Project statistics and user management</p>
+    </div>
+
+    <div class="stats-grid">
+        <?php 
+            $statuses = ['submitted', 'under_review', 'approved', 'rejected', 'revision_requested', 'archived'];
+            foreach ($statuses as $status):
+                $count = $counts[$status] ?? 0;
+        ?>
+            <div class="stat-card">
+                <p class="stat-label"><?php echo ucwords(str_replace('_', ' ', $status)); ?></p>
+                <p class="stat-value"><?php echo $count; ?></p>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>👥 User Management</h2>
+        </div>
+        <div class="card-body table-body">
       <table>
         <thead>
           <tr>
@@ -96,5 +113,6 @@ $users = $pdo->query("SELECT user_id, username, role, status FROM users ORDER BY
   <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
 </footer>
 <script src="/capstone-repo/assets/app.js"></script>
+<script src="/capstone-repo/assets/notifications.js"></script>
 </body>
 </html>

@@ -17,122 +17,144 @@ $reviewStmt = $pdo->prepare("
   ORDER BY r.review_timestamp DESC
 ");
 ?>
-<!doctype html>
-<html>
-<head><title>Student Dashboard</title>
-<link href="/capstone-repo/assets/custom.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Capstone Portal</title>
+    <link rel="stylesheet" href="../assets/dashboard.css">
 </head>
 <body>
 <header>
-  <div class="container">
-    <nav class="navbar">
-      <div class="navbar-brand">Capstone Portal</div>
-      <div class="flex items-center gap-3">
-        <a href="/capstone-repo/public/upload_project.php" class="btn btn-primary btn-sm">+ Upload Project</a>
-        <a href="/capstone-repo/public/logout.php" class="btn btn-ghost btn-sm">Logout</a>
-      </div>
-    </nav>
-  </div>
-</header>
-<main class="container py-3">
-  <div class="mb-6">
-    <h1>Welcome Back</h1>
-    <p class="text-muted">Manage and track your capstone projects below</p>
-  </div>
-
-  <?php if (empty($projects)): ?>
-    <div class="card">
-      <div class="card-body text-center py-6">
-        <p class="text-muted">No projects submitted yet.</p>
-        <a href="/capstone-repo/public/upload_project.php" class="btn btn-primary mt-4">Upload Your First Project</a>
-      </div>
-    </div>
-  <?php else: ?>
-    <div class="grid grid-cols-1">
-      <?php foreach ($projects as $p): ?>
-        <div class="card">
-          <div class="card-header flex justify-between items-center">
-            <div>
-              <h3 class="card-title"><?php echo htmlspecialchars($p['title']); ?></h3>
-            </div>
-            <div>
-              <?php 
-                $statusClass = match($p['status']) {
-                  'submitted' => 'badge-warning',
-                  'under_review' => 'badge-primary',
-                  'approved' => 'badge-success',
-                  'rejected' => 'badge-danger',
-                  'revision_requested' => 'badge-warning',
-                  default => 'badge-gray'
-                };
-                $statusLabel = ucwords(str_replace('_', ' ', $p['status']));
-              ?>
-              <span class="badge <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="text-muted mb-3"><?php echo htmlspecialchars(substr($p['abstract'], 0, 150)) . (strlen($p['abstract']) > 150 ? '...' : ''); ?></p>
-            <div class="grid grid-cols-2 gap-2 mb-3">
-              <div>
-                <p class="text-muted mb-0" style="font-size: 0.875rem;">Program</p>
-                <p class="mb-0"><strong><?php echo htmlspecialchars($p['program']); ?></strong></p>
-              </div>
-              <div>
-                <p class="text-muted mb-0" style="font-size: 0.875rem;">Year Completed</p>
-                <p class="mb-0"><strong><?php echo htmlspecialchars($p['year_completed']); ?></strong></p>
-              </div>
-            </div>
-
-            <?php 
-              // Fetch reviews for this project
-              $reviewStmt->execute([':pid' => $p['project_id']]);
-              $reviews = $reviewStmt->fetchAll();
-              
-              if (!empty($reviews)): 
-            ?>
-              <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
-                <p style="font-weight: 600; margin-bottom: 1rem;">Faculty Reviews</p>
-                <?php foreach ($reviews as $review): ?>
-                  <div style="background: #f9fafb; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                      <p style="font-weight: 500; margin: 0;">
-                        <?php echo htmlspecialchars($review['reviewer_name']); ?>
-                        <?php 
-                          $decisionBadgeClass = match($review['decision']) {
-                            'approve' => 'badge-success',
-                            'request_revision' => 'badge-warning',
-                            'reject' => 'badge-danger',
-                            default => 'badge-gray'
-                          };
-                          $decisionLabel = match($review['decision']) {
-                            'approve' => '✓ Approved',
-                            'request_revision' => '↻ Revision Requested',
-                            'reject' => '✕ Rejected',
-                            default => ucfirst($review['decision'])
-                          };
-                        ?>
-                        <span class="badge <?php echo $decisionBadgeClass; ?>" style="margin-left: 0.5rem;"><?php echo $decisionLabel; ?></span>
-                      </p>
-                      <p class="text-muted mb-0" style="font-size: 0.75rem;"><?php echo date('M d, Y', strtotime($review['review_timestamp'] ?? 'now')); ?></p>
+    <div class="navbar">
+        <div class="navbar-brand">📚 Capstone Portal</div>
+        <nav class="navbar-nav">
+            <div id="notification-system" class="notification-system">
+                <button id="notification-bell" class="notification-bell" title="Notifications">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span id="notification-badge" class="notification-badge hidden">0</span>
+                </button>
+                <div id="notification-panel" class="notification-panel hidden" role="dialog" aria-label="Notifications">
+                    <div class="notification-panel-header">
+                        <h4>Notifications</h4>
+                        <button id="notification-close" class="notification-close" aria-label="Close notifications">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
-                    <p style="margin: 0; color: #374151; line-height: 1.5; white-space: pre-wrap;"><?php echo htmlspecialchars($review['comment']); ?></p>
-                  </div>
-                <?php endforeach; ?>
-              </div>
-            <?php endif; ?>
-          </div>
-          <div class="card-footer flex justify-between items-center">
-            <a href="/capstone-repo/public/download.php?pid=<?php echo $p['project_id']; ?>" class="btn btn-primary btn-sm">Download</a>
-            <p class="text-muted mb-0" style="font-size: 0.875rem;"><?php echo date('M d, Y', strtotime($p['upload_timestamp'] ?? 'now')); ?></p>
-          </div>
-        </div>
-      <?php endforeach; ?>
+                    <div id="notification-items" class="notification-items"></div>
+                </div>
+            </div>
+            <a href="../public/approved_projects.php" class="btn btn-ghost">📚 Browse Projects</a>
+            <a href="../public/upload_project.php" class="btn btn-primary">+ Upload Project</a>
+            <a href="../public/logout.php" class="btn btn-ghost">Logout</a>
+        </nav>
     </div>
-  <?php endif; ?>
+</header>
+
+<main>
+    <div class="dashboard-header">
+        <h1>Welcome Back!</h1>
+        <p>Manage and track your capstone projects</p>
+    </div>
+
+    <?php if (empty($projects)): ?>
+        <div class="upload-prompt">
+            <div class="upload-prompt-icon">📤</div>
+            <h2>No Projects Yet</h2>
+            <p>Ready to share your capstone project? Upload it now and get feedback from faculty.</p>
+            <a href="../public/upload_project.php" class="btn btn-primary">Upload Your First Project</a>
+        </div>
+    <?php else: ?>
+        <div class="projects-container">
+            <?php foreach ($projects as $p): ?>
+                <div class="project-card">
+                    <div class="project-header">
+                        <h3 class="project-title"><?php echo htmlspecialchars($p['title']); ?></h3>
+                        <?php 
+                            $statusClass = match($p['status']) {
+                                'submitted' => 'submitted',
+                                'under_review' => 'submitted',
+                                'approved' => 'approved',
+                                'rejected' => 'rejected',
+                                'revision_requested' => 'revision',
+                                default => 'submitted'
+                            };
+                            $statusLabel = match($p['status']) {
+                                'submitted' => 'Submitted',
+                                'under_review' => 'Under Review',
+                                'approved' => 'Approved',
+                                'rejected' => 'Rejected',
+                                'revision_requested' => 'Needs Revision',
+                                default => ucwords(str_replace('_', ' ', $p['status']))
+                            };
+                        ?>
+                        <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
+                    </div>
+
+                    <div class="project-body">
+                        <p class="project-abstract"><?php echo htmlspecialchars(substr($p['abstract'], 0, 150)) . (strlen($p['abstract']) > 150 ? '...' : ''); ?></p>
+
+                        <div class="project-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Program</span>
+                                <span class="meta-value"><?php echo htmlspecialchars($p['program']); ?></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Year Completed</span>
+                                <span class="meta-value"><?php echo htmlspecialchars($p['year_completed']); ?></span>
+                            </div>
+                        </div>
+
+                        <?php 
+                            $reviewStmt->execute([':pid' => $p['project_id']]);
+                            $reviews = $reviewStmt->fetchAll();
+                            
+                            if (!empty($reviews)): 
+                        ?>
+                            <div class="reviews-section">
+                                <div class="reviews-title">⭐ Reviews</div>
+                                <?php foreach ($reviews as $review): ?>
+                                    <div class="review-item">
+                                        <div class="review-header">
+                                            <span class="review-by"><?php echo htmlspecialchars($review['reviewer_name']); ?></span>
+                                            <?php 
+                                                $decisionLabel = match($review['decision']) {
+                                                    'approve' => '✓ Approved',
+                                                    'request_revision' => '↻ Revision Needed',
+                                                    'reject' => '✕ Rejected',
+                                                    default => ucfirst($review['decision'])
+                                                };
+                                            ?>
+                                            <span class="review-decision-badge"><?php echo $decisionLabel; ?></span>
+                                            <span class="review-date"><?php echo date('M d, Y', strtotime($review['review_timestamp'] ?? 'now')); ?></span>
+                                        </div>
+                                        <p class="review-comment"><?php echo htmlspecialchars($review['comment']); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="project-footer">
+                        <a href="../public/download.php?pid=<?php echo $p['project_id']; ?>" class="btn btn-primary">⬇️ Download</a>
+                        <span class="project-upload-date">Uploaded: <?php echo date('M d, Y', strtotime($p['upload_timestamp'] ?? 'now')); ?></span>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </main>
 <footer>
   <p>&copy; 2026 Capstone Project Management System. All rights reserved.</p>
 </footer>
 <script src="/capstone-repo/assets/app.js"></script>
+<script src="/capstone-repo/assets/notifications.js"></script>
 </body>
 </html>
